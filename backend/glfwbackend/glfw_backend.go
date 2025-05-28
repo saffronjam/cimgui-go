@@ -218,8 +218,8 @@ func NewGLFWBackend() *GLFWBackend {
 	return b
 }
 
-func (b *GLFWBackend) handle() *C.GLFWWindow {
-	return (*C.GLFWWindow)(unsafe.Pointer(b.Window))
+func (b *GLFWBackend) handle() *C.GLFWwindow {
+	return (*C.GLFWwindow)(unsafe.Pointer(b.Window))
 }
 
 func (b *GLFWBackend) SetAfterCreateContextHook(hook func()) {
