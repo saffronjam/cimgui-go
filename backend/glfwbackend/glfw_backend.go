@@ -1,7 +1,7 @@
 package glfwbackend
 
 // #cgo amd64,linux LDFLAGS: ${SRCDIR}/../../lib/linux/x64/libglfw3.a -ldl -lGL -lX11
-// #cgo amd64,windows LDFLAGS: -L${SRCDIR}/../../lib/windows/x64 -l:libglfw3.a -lgdi32 -lopengl32 -limm32
+// #cgo amd64,Windows LDFLAGS: -L${SRCDIR}/../../lib/Windows/x64 -l:libglfw3.a -lgdi32 -lopengl32 -limm32
 // #cgo darwin LDFLAGS: -framework Cocoa -framework IOKit -framework CoreVideo
 // #cgo amd64,darwin LDFLAGS: ${SRCDIR}/../../lib/macos/x64/libglfw3.a
 // #cgo arm64,darwin LDFLAGS: ${SRCDIR}/../../lib/macos/arm64/libglfw3.a
@@ -206,7 +206,7 @@ type GLFWBackend struct {
 	closeCB              func(pointer unsafe.Pointer)
 	keyCb                backend.KeyCallback
 	sizeCb               backend.SizeChangeCallback
-	window               uintptr
+	Window               uintptr
 }
 
 func NewGLFWBackend() *GLFWBackend {
@@ -218,8 +218,8 @@ func NewGLFWBackend() *GLFWBackend {
 	return b
 }
 
-func (b *GLFWBackend) handle() *C.GLFWwindow {
-	return (*C.GLFWwindow)(unsafe.Pointer(b.window))
+func (b *GLFWBackend) handle() *C.GLFWWindow {
+	return (*C.GLFWWindow)(unsafe.Pointer(b.Window))
 }
 
 func (b *GLFWBackend) SetAfterCreateContextHook(hook func()) {
@@ -327,7 +327,7 @@ func (b *GLFWBackend) SetWindowTitle(title string) {
 	C.igGLFWWindow_SetTitle(b.handle(), (*C.char)(titleArg))
 }
 
-// The minimum and maximum size of the content area of a windowed mode window.
+// The minimum and maximum size of the content area of a Windowed mode Window.
 // To specify only a minimum size or only a maximum one, set the other pair to -1
 // e.g. SetWindowSizeLimits(640, 480, -1, -1)
 func (b *GLFWBackend) SetWindowSizeLimits(minWidth, minHeight, maxWidth, maxHeight int) {
@@ -342,14 +342,14 @@ func (b *GLFWBackend) CreateWindow(title string, width, height int) {
 	titleArg, titleFin := internal.WrapString[C.char](title)
 	defer titleFin()
 
-	b.window = uintptr(unsafe.Pointer(C.igCreateGLFWWindow(
+	b.Window = uintptr(unsafe.Pointer(C.igCreateGLFWWindow(
 		(*C.char)(titleArg),
 		C.int(width),
 		C.int(height),
 		C.VoidCallback(backend.AfterCreateContext()),
 	)))
-	if b.window == 0 {
-		panic("Failed to create GLFW window")
+	if b.Window == 0 {
+		panic("Failed to create GLFW Window")
 	}
 }
 
@@ -376,7 +376,7 @@ func (b *GLFWBackend) DeleteTexture(id imgui.TextureID) {
 }
 
 // SetDropCallback sets the drop callback which is called when an object
-// is dropped over the window.
+// is dropped over the Window.
 func (b *GLFWBackend) SetDropCallback(cbfun backend.DropCallback) {
 	b.dropCB = cbfun
 	C.igGLFWWindow_SetDropCallbackCB(b.handle())
@@ -396,7 +396,7 @@ func (b *GLFWBackend) SetWindowFlags(flag GLFWWindowFlags, value int) {
 	C.igWindowHint(C.GLFWWindowFlags(flag), C.int(value))
 }
 
-// SetIcons sets icons for the window.
+// SetIcons sets icons for the Window.
 // THIS CODE COMES FROM https://github.com/go-gl/glfw (BSD-3 clause) - Copyright (c) 2012 The glfw3-go Authors. All rights reserved.
 func (b *GLFWBackend) SetIcons(images ...image.Image) {
 	count := len(images)
