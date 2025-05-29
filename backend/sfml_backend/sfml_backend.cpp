@@ -4,9 +4,9 @@
 
 #include "../../thirdparty/SFML/include/SFML/Graphics/RenderWindow.hpp"
 
-void igInit(sf::RenderWindow *window, bool loadDefaultFont)
+bool igInit(sf::RenderWindow *window, bool loadDefaultFont)
 {
-    ImGui_ImplSFML_Init(window, loadDefaultFont);
+    return ImGui_ImplSFML_Init(window, loadDefaultFont);
 }
 
 void igProcessEvent(sf::RenderWindow *window, sf::Event *event)

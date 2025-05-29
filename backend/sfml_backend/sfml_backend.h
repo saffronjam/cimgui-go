@@ -16,7 +16,7 @@ namespace sf
     class RenderWindow;
 } // namespace sf
 
-extern void igInit(sf::RenderWindow *window, bool loadDefaultFont = true);
+extern bool igInit(sf::RenderWindow *window, bool loadDefaultFont = true);
 extern void igProcessEvent(sf::RenderWindow *window, sf::Event *event);
 extern void igUpdate(sf::RenderWindow *window, u_int64_t dtUs);
 extern void igRender(sf::RenderWindow *window);

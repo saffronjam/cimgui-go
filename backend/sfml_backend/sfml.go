@@ -1,4 +1,4 @@
-package sdlbackend
+package sfml_backend
 
 // #cgo amd64,linux LDFLAGS: -L${SRCDIR}/../../lib/linux/x64 -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-system -lsfml-window -lcsfml-graphics -lcsfml-window -lcsfml-system -lcsfml-audio -lcsfml-network
 // #cgo CPPFLAGS: -DCIMGUI_GO_USE_SFML
