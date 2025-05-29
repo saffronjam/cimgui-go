@@ -30,27 +30,22 @@ func (b *SfmlBackend) Shutdown(sfWindow uintptr) {
 	C.igShutdown(sfWindow)
 }
 
-func (b *SfmlBackend) NewFrame(sfWindow uintptr, dt time.Duration) error {
-	if C.igUpdate(sfWindow, C.double(dt.Microseconds())) < 0 {
-		return errors.New("failed to start new frame in SFML")
-	}
-	return nil
+func (b *SfmlBackend) NewFrame(sfWindow uintptr, dt time.Duration) {
+	C.igUpdate(sfWindow, C.double(dt.Microseconds()))
 }
 
-func (b *SfmlBackend) Render(sfWindow uintptr) error {
-	if C.igRender(sfWindow) < 0 {
-		return errors.New("failed to render SFML frame")
-	}
-	return nil
+func (b *SfmlBackend) Render(sfWindow uintptr) {
+	C.igRender(sfWindow)
 }
 
-func (b *SfmlBackend) ProcessEvent(sfWindow uintptr, event uintptr) error {
-	if C.igProcessEvent(sfWindow, event) < 0 {
-		return errors.New("failed to process SFML event")
-	}
-	return nil
+func (b *SfmlBackend) ProcessEvent(sfWindow uintptr, event uintptr) {
+	C.igProcessEvent(sfWindow, event)
 }
 
-func (b *SfmlBackend) UpdateFontTexture(sfWindow uintptr) bool {
-	return C.igUpdateFontTexture(sfWindow) != 0
+func (b *SfmlBackend) UpdateFontTexture(sfWindow uintptr) error {
+	if C.igUpdateFontTexture(sfWindow) < 0 {
+		return errors.New("failed to update font texture: " + C.GoString(C.SDL_GetError()))
+	}
+
+	return nil
 }
