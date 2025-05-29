@@ -4,24 +4,29 @@
 
 #include "../../thirdparty/SFML/include/SFML/Graphics/RenderWindow.hpp"
 
-bool igInit(sf::RenderWindow *window, bool loadDefaultFont)
+bool igInit(void *window, bool loadDefaultFont)
 {
-    return ImGui_ImplSFML_Init(window, loadDefaultFont);
+    auto *sfmlWindow = static_cast<sf::RenderWindow *>(window);
+    return ImGui_ImplSFML_Init(sfmlWindow, loadDefaultFont);
 }
 
-void igProcessEvent(sf::RenderWindow *window, sf::Event *event)
+void igProcessEvent(void *window, void *event)
 {
-    ImGui_ImplSFML_ProcessEvent(window, event);
+    auto *sfmlWindow = static_cast<sf::RenderWindow *>(window);
+    auto *sfmlEvent = static_cast<sf::Event *>(event);
+    ImGui_ImplSFML_ProcessEvent(sfmlWindow, sfmlEvent);
 }
 
-void igUpdate(sf::RenderWindow *window, u_int64_t dt)
+void igUpdate(void *window, u_int64_t dt)
 {
-    ImGui_ImplSFML_Update(window, sf::microseconds(dt));
+    auto *sfmlWindow = static_cast<sf::RenderWindow *>(window);
+    ImGui_ImplSFML_Update(sfmlWindow, sf::microseconds(dt));
 }
 
-void igRender(sf::RenderWindow *window)
+void igRender(void *window)
 {
-    ImGui_ImplSFML_Render(window);
+    auto *sfmlWindow = static_cast<sf::RenderWindow *>(window);
+    ImGui_ImplSFML_Render(sfmlWindow);
 }
 
 bool igUpdateFontTexture()
@@ -29,7 +34,8 @@ bool igUpdateFontTexture()
     return ImGui_ImplSFML_UpdateFontTexture();
 }
 
-void igShutdown(sf::RenderWindow *window)
+void igShutdown(void *window)
 {
-    ImGui_ImplSFML_Shutdown(window);
+    auto *sfmlWindow = static_cast<sf::RenderWindow *>(window);
+    ImGui_ImplSFML_Shutdown(sfmlWindow);
 }

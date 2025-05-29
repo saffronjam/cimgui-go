@@ -1,18 +1,11 @@
 #ifndef IMGUI_SFML_H
 #define IMGUI_SFML_H
 
-namespace sf
-{
-    class Event;
-    class RenderTexture;
-    class RenderWindow;
-} // namespace sf
-
-extern bool igInit(sf::RenderWindow *window, bool loadDefaultFont = true);
-extern void igProcessEvent(sf::RenderWindow *window, sf::Event *event);
-extern void igUpdate(sf::RenderWindow *window, u_int64_t dtUs);
-extern void igRender(sf::RenderWindow *window);
+extern bool igInit(void *window, bool loadDefaultFont = true);
+extern void igProcessEvent(void *window, void *event);
+extern void igUpdate(void *window, u_int64_t dtUs);
+extern void igRender(void *window);
 extern bool igUpdateFontTexture();
-extern void igShutdown(sf::RenderWindow *window);
+extern void igShutdown(void *window);
 
 #endif // # IMGUI_SFML_H
