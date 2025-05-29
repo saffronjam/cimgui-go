@@ -1,5 +1,5 @@
 {
-        "PackagePath": "github.com/AllenDang/cimgui-go",
+        "PackagePath": "github.com/saffronjam/cimgui-go",
         "SkipFuncs": {
                 "igInputText":                     true,
                 "igInputTextWithHint":             true,

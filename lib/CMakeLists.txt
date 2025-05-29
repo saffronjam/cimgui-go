@@ -66,6 +66,12 @@ else(WIN32)#Unix
   list(APPEND IMGUI_LIBRARIES GL)
 endif(WIN32)
 
+#sfml
+set(SFML_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty/SFML)
+set(SFML_INCLUDE_DIR ${SFML_PREFIX}/include)
+list(APPEND IMGUI_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../cwrappers/imgui/backends/imgui_impl_sfml.cpp)
+list(APPEND IMGUI_LIBRARIES sfml-graphics sfml-window sfml-system sfml-audio sfml-network)
+
 if(IMGUI_FREETYPE)
 	FIND_PACKAGE(freetype REQUIRED PATHS ${FREETYPE_PATH})
 	list(APPEND IMGUI_LIBRARIES freetype)
@@ -91,6 +97,7 @@ target_include_directories(cimgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../cwrapper
 target_include_directories(cimgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../cwrappers/imgui)
 target_include_directories(cimgui PUBLIC ${GLFW3_INCLUDE_DIR})
 target_include_directories(cimgui PUBLIC ${SDL2_INCLUDE_DIR})
+target_include_directories(cimgui PUBLIC ${SFML_INCLUDE_DIR})
 set_target_properties(cimgui PROPERTIES PREFIX "")
 target_link_libraries(cimgui ${IMGUI_LIBRARIES})
 # this is for regex used by ImGuiColorTextEdit
