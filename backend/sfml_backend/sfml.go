@@ -23,7 +23,7 @@ func NewSfmlBackend() *SfmlBackend {
 
 func (b *SfmlBackend) Init(sfWindow uintptr, loadDefaultFont bool) error {
 	if C.igInit(sfWindow, loadDefaultFont) < 0 {
-		return errors.New("failed to initialize SDL: " + C.GoString(C.SDL_GetError()))
+		return errors.New("failed to initialize SFML")
 	}
 	return nil
 }
@@ -46,7 +46,7 @@ func (b *SfmlBackend) ProcessEvent(sfWindow uintptr, event uintptr) {
 
 func (b *SfmlBackend) UpdateFontTexture(sfWindow uintptr) error {
 	if C.igUpdateFontTexture(sfWindow) < 0 {
-		return errors.New("failed to update font texture: " + C.GoString(C.SDL_GetError()))
+		return errors.New("failed to update font texture")
 	}
 
 	return nil
