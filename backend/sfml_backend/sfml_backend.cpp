@@ -17,7 +17,7 @@ void igProcessEvent(void *window, void *event)
     ImGui_ImplSFML_ProcessEvent(sfmlWindow, sfmlEvent);
 }
 
-void igUpdate(void *window, u_int64_t dt)
+void igUpdate(void *window, uint64_t dt)
 {
     auto *sfmlWindow = static_cast<sf::RenderWindow *>(window);
     ImGui_ImplSFML_Update(sfmlWindow, sf::microseconds(dt));
