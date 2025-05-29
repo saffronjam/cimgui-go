@@ -14,7 +14,7 @@ func SliceToPtr[T any](slice []T) *T {
 
 // PtrToSlice in short is an equvalent to `unsafe.Slice(x, length)`.
 // It allows to restore imgui data presented in form of a pointer to a Go slice.
-// Reference issue: https://github.com/AllenDang/cimgui-go/issues/160#issuecomment-2768647950
+// Reference issue: https://github.com/saffronjam/cimgui-go/issues/160#issuecomment-2768647950
 // Example usage:
 //
 //	Consider you have sortSpecs := imgui.TableGetSortSpecs()

@@ -71,3 +71,18 @@ CIMGUI_API bool ImGui_ImplSDL2_ProcessEvent(const SDL_Event* event);
 CIMGUI_API void ImGui_ImplSDL2_SetGamepadMode(ImGui_ImplSDL2_GamepadMode mode,struct _SDL_GameController** manual_gamepads_array,int manual_gamepads_count);
 
 #endif
+#ifdef CIMGUI_USE_SFML
+#ifdef CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+
+    class Event;
+    class RenderWindow;
+    class Time;
+#endif //CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+CIMGUI_API bool ImGui_ImplSFML_Init(sf::RenderWindow* window,bool load_default_font);
+CIMGUI_API void ImGui_ImplSFML_Shutdown(sf::RenderWindow* window);
+CIMGUI_API void ImGui_ImplSFML_ProcessEvent(sf::RenderWindow* window,sf::Event* event);
+CIMGUI_API void ImGui_ImplSFML_Update(sf::RenderWindow* window,sf::Time dt);
+CIMGUI_API void ImGui_ImplSFML_Render(sf::RenderWindow* window);
+CIMGUI_API bool ImGui_ImplSFML_UpdateFontTexture(void);
+
+#endif

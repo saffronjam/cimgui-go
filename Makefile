@@ -99,6 +99,7 @@ define update
 	git clone --recurse-submodules $2 tmp/$1
 	cd tmp/$1/$3; \
 		git checkout $4
+	cp -rf tmppatch/* tmp/
 	cd tmp/$1/generator; \
 		bash generator.sh --target "internal noimstrv comments" $5
 	cp -f tmp/$1/$1* cwrappers/
@@ -118,7 +119,7 @@ endef
 .PHONY: update
 update: setup
 	rm -rf cwrappers/*
-	$(call update,cimgui,https://github.com/cimgui/cimgui,imgui,docking, --cflags "glfw opengl3 opengl2 sdl2 -DIMGUI_USE_WCHAR32")
+	$(call update,cimgui,https://github.com/cimgui/cimgui,imgui,docking, --cflags "glfw opengl3 opengl2 sdl2 sfml -DIMGUI_USE_WCHAR32")
 	cat templates/assert.h >> cwrappers/imgui/imconfig.h
 	$(call imgui)
 	$(call update,cimplot,https://github.com/cimgui/cimplot,implot,master)
@@ -139,7 +140,7 @@ define dummy
 	echo -e "//go:build required\n// +build required\n\npackage imgui\n\nimport (\n" > dummy.go
 	for i in `find cwrappers -type f \( -name "*.h" -o -name "*.cpp" \) -exec dirname {} \; | sort -u`; do \
 		cp templates/dummy.go.template $$i/dummy.go; \
-		echo -e "\t_ \"github.com/AllenDang/cimgui-go/$$i\"" >> dummy.go; \
+		echo -e "\t_ \"github.com/saffronjam/cimgui-go/$$i\"" >> dummy.go; \
 		done
 	echo ")" >> dummy.go
 endef
