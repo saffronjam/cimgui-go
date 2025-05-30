@@ -1,6 +1,6 @@
 package sfml_backend
 
-// #cgo amd64,linux LDFLAGS: -L${SRCDIR}/../../lib/linux/x64 -lcsfml-system -lcsfml-window -lcsfml-graphics -lcsfml-audio -lcsfml-network -lsfml-audio -lsfml-network -lsfml-graphics -lsfml-window -lsfml-system -lX11 -ldl -lGL -lXrandr -lstdc++ -ludev
+// #cgo amd64,linux LDFLAGS: -L${SRCDIR}/../../lib/linux/x64 -lcsfml-system -lcsfml-window -lcsfml-graphics -lcsfml-audio -lcsfml-network -lsfml-audio -lsfml-network -lsfml-graphics -lsfml-window -lsfml-system -lX11 -ldl -lGL -lXrandr -lstdc++ -ludev -lfreetype
 // #cgo CPPFLAGS: -DCIMGUI_GO_USE_SFML
 // #cgo CXXFLAGS: -I${SRCDIR}/../../thirdparty/SFML/include -I${SRCDIR}/../../cwrappers/imgui
 // #include <stdlib.h>
