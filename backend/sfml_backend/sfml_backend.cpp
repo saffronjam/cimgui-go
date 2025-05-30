@@ -9,32 +9,32 @@ extern "C"
 {
 #endif
 
-    bool igInit(void *window, bool loadDefaultFont)
+    bool igSfmlInit(void *window, bool loadDefaultFont)
     {
         return cimgui_ImGui_ImplSFML_Init(window, loadDefaultFont);
     }
 
-    void igProcessEvent(void *window, void *event)
+    void igSfmlProcessEvent(void *window, void *event)
     {
         cimgui_ImGui_ImplSFML_ProcessEvent(window, event);
     }
 
-    void igUpdate(void *window, uint64_t dt)
+    void igSfmlUpdate(void *window, uint64_t dt)
     {
         cimgui_ImGui_ImplSFML_Update(window, dt);
     }
 
-    void igRender(void *window)
+    void igSfmlRender(void *window)
     {
         cimgui_ImGui_ImplSFML_Render(window);
     }
 
-    bool igUpdateFontTexture()
+    bool igSfmlUpdateFontTexture()
     {
         return cimgui_UpdateFontTexture();
     }
 
-    void igShutdown(void *window)
+    void igSfmlShutdown(void *window)
     {
         cimgui_ImGui_ImplSFML_Shutdown(window);
     }

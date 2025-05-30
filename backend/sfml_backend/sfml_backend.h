@@ -4,15 +4,16 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-extern bool igInit(void *window, bool loadDefaultFont);
-extern void igProcessEvent(void *window, void *event);
-extern void igUpdate(void *window, uint64_t dtUs);
-extern void igRender(void *window);
-extern bool igUpdateFontTexture();
-extern void igShutdown(void *window);
+    extern bool igSfmlInit(void *window, bool loadDefaultFont);
+    extern void igSfmlProcessEvent(void *window, void *event);
+    extern void igSfmlUpdate(void *window, uint64_t dtUs);
+    extern void igSfmlRender(void *window);
+    extern bool igSfmlUpdateFontTexture();
+    extern void igSfmlShutdown(void *window);
 
 #ifdef __cplusplus
 }
