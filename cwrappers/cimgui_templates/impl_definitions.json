@@ -930,7 +930,7 @@
         "load_default_font": "true"
       },
       "funcname": "ImGui_ImplSFML_Init",
-      "location": "imgui_impl_sfml:14",
+      "location": "imgui_impl_sfml:15",
       "ov_cimguiname": "ImGui_ImplSFML_Init",
       "ret": "bool",
       "signature": "(sf::RenderWindow*,bool)",
@@ -955,7 +955,7 @@
       "cimguiname": "ImGui_ImplSFML_ProcessEvent",
       "defaults": {},
       "funcname": "ImGui_ImplSFML_ProcessEvent",
-      "location": "imgui_impl_sfml:16",
+      "location": "imgui_impl_sfml:17",
       "ov_cimguiname": "ImGui_ImplSFML_ProcessEvent",
       "ret": "void",
       "signature": "(sf::RenderWindow*,sf::Event*)",
@@ -976,7 +976,7 @@
       "cimguiname": "ImGui_ImplSFML_Render",
       "defaults": {},
       "funcname": "ImGui_ImplSFML_Render",
-      "location": "imgui_impl_sfml:18",
+      "location": "imgui_impl_sfml:19",
       "ov_cimguiname": "ImGui_ImplSFML_Render",
       "ret": "void",
       "signature": "(sf::RenderWindow*)",
@@ -997,7 +997,7 @@
       "cimguiname": "ImGui_ImplSFML_Shutdown",
       "defaults": {},
       "funcname": "ImGui_ImplSFML_Shutdown",
-      "location": "imgui_impl_sfml:15",
+      "location": "imgui_impl_sfml:16",
       "ov_cimguiname": "ImGui_ImplSFML_Shutdown",
       "ret": "void",
       "signature": "(sf::RenderWindow*)",
@@ -1022,7 +1022,7 @@
       "cimguiname": "ImGui_ImplSFML_Update",
       "defaults": {},
       "funcname": "ImGui_ImplSFML_Update",
-      "location": "imgui_impl_sfml:17",
+      "location": "imgui_impl_sfml:18",
       "ov_cimguiname": "ImGui_ImplSFML_Update",
       "ret": "void",
       "signature": "(sf::RenderWindow*,sf::Time)",
@@ -1038,8 +1038,141 @@
       "cimguiname": "ImGui_ImplSFML_UpdateFontTexture",
       "defaults": {},
       "funcname": "ImGui_ImplSFML_UpdateFontTexture",
-      "location": "imgui_impl_sfml:19",
+      "location": "imgui_impl_sfml:20",
       "ov_cimguiname": "ImGui_ImplSFML_UpdateFontTexture",
+      "ret": "bool",
+      "signature": "()",
+      "stname": ""
+    }
+  ],
+  "cimgui_ImGui_ImplSFML_Init": [
+    {
+      "args": "(void* window,bool load_default_font)",
+      "argsT": [
+        {
+          "name": "window",
+          "type": "void*"
+        },
+        {
+          "name": "load_default_font",
+          "type": "bool"
+        }
+      ],
+      "argsoriginal": "(void* window,bool load_default_font)",
+      "call_args": "(window,load_default_font)",
+      "cimguiname": "cimgui_ImGui_ImplSFML_Init",
+      "defaults": {},
+      "funcname": "cimgui_ImGui_ImplSFML_Init",
+      "location": "imgui_impl_sfml:26",
+      "ov_cimguiname": "cimgui_ImGui_ImplSFML_Init",
+      "ret": "bool",
+      "signature": "(void*,bool)",
+      "stname": ""
+    }
+  ],
+  "cimgui_ImGui_ImplSFML_ProcessEvent": [
+    {
+      "args": "(void* window,void* event)",
+      "argsT": [
+        {
+          "name": "window",
+          "type": "void*"
+        },
+        {
+          "name": "event",
+          "type": "void*"
+        }
+      ],
+      "argsoriginal": "(void* window,void* event)",
+      "call_args": "(window,event)",
+      "cimguiname": "cimgui_ImGui_ImplSFML_ProcessEvent",
+      "defaults": {},
+      "funcname": "cimgui_ImGui_ImplSFML_ProcessEvent",
+      "location": "imgui_impl_sfml:28",
+      "ov_cimguiname": "cimgui_ImGui_ImplSFML_ProcessEvent",
+      "ret": "void",
+      "signature": "(void*,void*)",
+      "stname": ""
+    }
+  ],
+  "cimgui_ImGui_ImplSFML_Render": [
+    {
+      "args": "(void* window)",
+      "argsT": [
+        {
+          "name": "window",
+          "type": "void*"
+        }
+      ],
+      "argsoriginal": "(void* window)",
+      "call_args": "(window)",
+      "cimguiname": "cimgui_ImGui_ImplSFML_Render",
+      "defaults": {},
+      "funcname": "cimgui_ImGui_ImplSFML_Render",
+      "location": "imgui_impl_sfml:30",
+      "ov_cimguiname": "cimgui_ImGui_ImplSFML_Render",
+      "ret": "void",
+      "signature": "(void*)",
+      "stname": ""
+    }
+  ],
+  "cimgui_ImGui_ImplSFML_Shutdown": [
+    {
+      "args": "(void* window)",
+      "argsT": [
+        {
+          "name": "window",
+          "type": "void*"
+        }
+      ],
+      "argsoriginal": "(void* window)",
+      "call_args": "(window)",
+      "cimguiname": "cimgui_ImGui_ImplSFML_Shutdown",
+      "defaults": {},
+      "funcname": "cimgui_ImGui_ImplSFML_Shutdown",
+      "location": "imgui_impl_sfml:27",
+      "ov_cimguiname": "cimgui_ImGui_ImplSFML_Shutdown",
+      "ret": "void",
+      "signature": "(void*)",
+      "stname": ""
+    }
+  ],
+  "cimgui_ImGui_ImplSFML_Update": [
+    {
+      "args": "(void* window,uint64_t dtUs)",
+      "argsT": [
+        {
+          "name": "window",
+          "type": "void*"
+        },
+        {
+          "name": "dtUs",
+          "type": "uint64_t"
+        }
+      ],
+      "argsoriginal": "(void* window,uint64_t dtUs)",
+      "call_args": "(window,dtUs)",
+      "cimguiname": "cimgui_ImGui_ImplSFML_Update",
+      "defaults": {},
+      "funcname": "cimgui_ImGui_ImplSFML_Update",
+      "location": "imgui_impl_sfml:29",
+      "ov_cimguiname": "cimgui_ImGui_ImplSFML_Update",
+      "ret": "void",
+      "signature": "(void*,uint64_t)",
+      "stname": ""
+    }
+  ],
+  "cimgui_UpdateFontTexture": [
+    {
+      "args": "()",
+      "argsT": [],
+      "argsoriginal": "()",
+      "call_args": "()",
+      "cimguiname": "cimgui_UpdateFontTexture",
+      "defaults": {},
+      "funcname": "cimgui_UpdateFontTexture",
+      "location": "imgui_impl_sfml:31",
+      "ov_cimguiname": "cimgui_UpdateFontTexture",
       "ret": "bool",
       "signature": "()",
       "stname": ""

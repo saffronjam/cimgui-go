@@ -84,5 +84,11 @@ CIMGUI_API void ImGui_ImplSFML_ProcessEvent(sf::RenderWindow* window,sf::Event* 
 CIMGUI_API void ImGui_ImplSFML_Update(sf::RenderWindow* window,sf::Time dt);
 CIMGUI_API void ImGui_ImplSFML_Render(sf::RenderWindow* window);
 CIMGUI_API bool ImGui_ImplSFML_UpdateFontTexture(void);
+CIMGUI_API bool cimgui_ImGui_ImplSFML_Init(void* window,bool load_default_font);
+CIMGUI_API void cimgui_ImGui_ImplSFML_Shutdown(void* window);
+CIMGUI_API void cimgui_ImGui_ImplSFML_ProcessEvent(void* window,void* event);
+CIMGUI_API void cimgui_ImGui_ImplSFML_Update(void* window,uint64_t dtUs);
+CIMGUI_API void cimgui_ImGui_ImplSFML_Render(void* window);
+CIMGUI_API bool cimgui_UpdateFontTexture(void);
 
 #endif

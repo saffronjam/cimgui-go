@@ -122,6 +122,8 @@ int closeKeyboardIME()
 static_assert(sizeof(GLuint) <= sizeof(ImTextureID),
               "ImTextureID is not large enough to fit GLuint.");
 
+bool UpdateFontTexture();
+
 namespace
 {
     // various helper functions
@@ -133,9 +135,6 @@ namespace
     GLuint convertImTextureIDToGLTextureHandle(ImTextureID textureID);
 
     void RenderDrawLists(ImDrawData *draw_data); // rendering callback function prototype
-
-    // Default mapping is XInput gamepad mapping
-    void initDefaultJoystickMapping();
 
     // Returns first id of connected joystick
     unsigned int getConnectedJoystickId();
@@ -222,16 +221,6 @@ namespace
 
 } // end of anonymous namespace
 
-bool Init(sf::RenderWindow &window, bool loadDefaultFont)
-{
-    return Init(window, window, loadDefaultFont);
-}
-
-bool Init(sf::Window &window, sf::RenderTarget &target, bool loadDefaultFont)
-{
-    return Init(window, sf::Vector2f(target.getSize()), loadDefaultFont);
-}
-
 bool Init(sf::Window &window, const sf::Vector2f &displaySize, bool loadDefaultFont)
 {
     s_windowContexts.emplace_back(new WindowContext(&window));
@@ -249,14 +238,8 @@ bool Init(sf::Window &window, const sf::Vector2f &displaySize, bool loadDefaultF
 
     s_currWindowCtx->joystickId = getConnectedJoystickId();
 
-    initDefaultJoystickMapping();
-
     // init rendering
     io.DisplaySize = ImVec2(displaySize.x, displaySize.y);
-
-    // clipboard
-    io.SetClipboardTextFn = setClipboardText;
-    io.GetClipboardTextFn = getClipboardText;
 
     // load mouse cursors
     loadMouseCursor(ImGuiMouseCursor_Arrow, sf::Cursor::Arrow);
@@ -278,6 +261,16 @@ bool Init(sf::Window &window, const sf::Vector2f &displaySize, bool loadDefaultF
     return true;
 }
 
+bool Init(sf::Window &window, sf::RenderTarget &target, bool loadDefaultFont)
+{
+    return Init(window, sf::Vector2f(target.getSize()), loadDefaultFont);
+}
+
+bool Init(sf::RenderWindow &window, bool loadDefaultFont)
+{
+    return Init(window, window, loadDefaultFont);
+}
+
 void SetCurrentWindow(const sf::Window &window)
 {
     auto found = std::find_if(s_windowContexts.begin(), s_windowContexts.end(),
@@ -289,19 +282,6 @@ void SetCurrentWindow(const sf::Window &window)
            "Failed to find the window. Forgot to call ImGui::SFML::Init for the window?");
     s_currWindowCtx = found->get();
     ImGui::SetCurrentContext(s_currWindowCtx->imContext);
-}
-
-void ProcessEvent(const sf::RenderWindow &window, const sf::Event &event)
-{
-    SetCurrentWindow(window);
-#if defined(__GNUC__) || defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-    ProcessEvent(event);
-#if defined(__GNUC__) || defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
 }
 
 void ProcessEvent(const sf::Event &event)
@@ -431,36 +411,17 @@ void ProcessEvent(const sf::Event &event)
     }
 }
 
-void Update(sf::RenderWindow &window, sf::Time &dt)
-{
-    Update(window, window, dt);
-}
-
-void Update(sf::Window &window, sf::RenderTarget &target, sf::Time dt)
+void ProcessEvent(const sf::RenderWindow &window, const sf::Event &event)
 {
     SetCurrentWindow(window);
-    assert(s_currWindowCtx);
-
-    // Update OS/hardware mouse cursor if imgui isn't drawing a software cursor
-    const ImGuiMouseCursor mouse_cursor =
-        ImGui::GetIO().MouseDrawCursor ? ImGuiMouseCursor_None : ImGui::GetMouseCursor();
-    if (s_currWindowCtx->lastCursor != mouse_cursor)
-    {
-        s_currWindowCtx->lastCursor = mouse_cursor;
-        updateMouseCursor(window);
-    }
-
-    if (!s_currWindowCtx->mouseMoved)
-    {
-        if (sf::Touch::isDown(0))
-            s_currWindowCtx->touchPos = sf::Touch::getPosition(0, window);
-
-        Update(s_currWindowCtx->touchPos, sf::Vector2f(target.getSize()), dt);
-    }
-    else
-    {
-        Update(sf::Mouse::getPosition(window), sf::Vector2f(target.getSize()), dt);
-    }
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+    ProcessEvent(event);
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 }
 
 void Update(const sf::Vector2i &mousePos, const sf::Vector2f &displaySize, sf::Time dt)
@@ -524,19 +485,46 @@ void Update(const sf::Vector2i &mousePos, const sf::Vector2f &displaySize, sf::T
     ImGui::NewFrame();
 }
 
+void Update(sf::Window &window, sf::RenderTarget &target, sf::Time dt)
+{
+    SetCurrentWindow(window);
+    assert(s_currWindowCtx);
+
+    // Update OS/hardware mouse cursor if imgui isn't drawing a software cursor
+    const ImGuiMouseCursor mouse_cursor =
+        ImGui::GetIO().MouseDrawCursor ? ImGuiMouseCursor_None : ImGui::GetMouseCursor();
+    if (s_currWindowCtx->lastCursor != mouse_cursor)
+    {
+        s_currWindowCtx->lastCursor = mouse_cursor;
+        updateMouseCursor(window);
+    }
+
+    if (!s_currWindowCtx->mouseMoved)
+    {
+        if (sf::Touch::isDown(0))
+            s_currWindowCtx->touchPos = sf::Touch::getPosition(0, window);
+
+        Update(s_currWindowCtx->touchPos, sf::Vector2f(target.getSize()), dt);
+    }
+    else
+    {
+        Update(sf::Mouse::getPosition(window), sf::Vector2f(target.getSize()), dt);
+    }
+}
+
+void Update(sf::RenderWindow &window, sf::Time &dt)
+{
+    Update(window, window, dt);
+}
+
 void Render(sf::RenderWindow &window)
 {
     SetCurrentWindow(window);
-    Render(static_cast<sf::RenderTarget &>(window));
-}
-
-void Render(sf::RenderTarget &target)
-{
-    target.resetGLStates();
-    target.pushGLStates();
+    window.resetGLStates();
+    window.pushGLStates();
     ImGui::Render();
     RenderDrawLists(ImGui::GetDrawData());
-    target.popGLStates();
+    window.popGLStates();
 }
 
 void Render()
@@ -610,252 +598,6 @@ bool UpdateFontTexture()
     io.Fonts->SetTexID(texID);
 
     return true;
-}
-
-void SetActiveJoystickId(unsigned int joystickId)
-{
-    assert(s_currWindowCtx);
-    assert(joystickId < sf::Joystick::Count);
-    s_currWindowCtx->joystickId = joystickId;
-}
-
-void SetJoystickDPadThreshold(float threshold)
-{
-    assert(s_currWindowCtx);
-    assert(threshold >= 0.f && threshold <= 100.f);
-    s_currWindowCtx->dPadInfo.threshold = threshold;
-}
-
-void SetJoystickLStickThreshold(float threshold)
-{
-    assert(s_currWindowCtx);
-    assert(threshold >= 0.f && threshold <= 100.f);
-    s_currWindowCtx->lStickInfo.threshold = threshold;
-}
-
-void SetJoystickRStickThreshold(float threshold)
-{
-    assert(s_currWindowCtx);
-    assert(threshold >= 0.f && threshold <= 100.f);
-    s_currWindowCtx->rStickInfo.threshold = threshold;
-}
-
-void SetJoystickLTriggerThreshold(float threshold)
-{
-    assert(s_currWindowCtx);
-    assert(threshold >= -100.f && threshold <= 100.f);
-    s_currWindowCtx->lTriggerInfo.threshold = threshold;
-}
-
-void SetJoystickRTriggerThreshold(float threshold)
-{
-    assert(s_currWindowCtx);
-    assert(threshold >= -100.f && threshold <= 100.f);
-    s_currWindowCtx->rTriggerInfo.threshold = threshold;
-}
-
-void SetJoystickMapping(int key, unsigned int joystickButton)
-{
-    assert(s_currWindowCtx);
-    assert(key >= ImGuiKey_NamedKey_BEGIN);
-    assert(key < ImGuiKey_NamedKey_END);
-    assert(joystickButton < sf::Joystick::ButtonCount);
-    s_currWindowCtx->joystickMapping[joystickButton] = static_cast<ImGuiKey>(key);
-}
-
-void SetDPadXAxis(sf::Joystick::Axis dPadXAxis, bool inverted)
-{
-    assert(s_currWindowCtx);
-    s_currWindowCtx->dPadInfo.xAxis = dPadXAxis;
-    s_currWindowCtx->dPadInfo.xInverted = inverted;
-}
-
-void SetDPadYAxis(sf::Joystick::Axis dPadYAxis, bool inverted)
-{
-    assert(s_currWindowCtx);
-    s_currWindowCtx->dPadInfo.yAxis = dPadYAxis;
-    s_currWindowCtx->dPadInfo.yInverted = inverted;
-}
-
-void SetLStickXAxis(sf::Joystick::Axis lStickXAxis, bool inverted)
-{
-    assert(s_currWindowCtx);
-    s_currWindowCtx->lStickInfo.xAxis = lStickXAxis;
-    s_currWindowCtx->lStickInfo.xInverted = inverted;
-}
-
-void SetLStickYAxis(sf::Joystick::Axis lStickYAxis, bool inverted)
-{
-    assert(s_currWindowCtx);
-    s_currWindowCtx->lStickInfo.yAxis = lStickYAxis;
-    s_currWindowCtx->lStickInfo.yInverted = inverted;
-}
-
-void SetRStickXAxis(sf::Joystick::Axis rStickXAxis, bool inverted)
-{
-    assert(s_currWindowCtx);
-    s_currWindowCtx->rStickInfo.xAxis = rStickXAxis;
-    s_currWindowCtx->rStickInfo.xInverted = inverted;
-}
-
-void SetRStickYAxis(sf::Joystick::Axis rStickYAxis, bool inverted)
-{
-    assert(s_currWindowCtx);
-    s_currWindowCtx->rStickInfo.yAxis = rStickYAxis;
-    s_currWindowCtx->rStickInfo.yInverted = inverted;
-}
-
-void SetLTriggerAxis(sf::Joystick::Axis lTriggerAxis)
-{
-    assert(s_currWindowCtx);
-    s_currWindowCtx->rTriggerInfo.axis = lTriggerAxis;
-}
-
-void SetRTriggerAxis(sf::Joystick::Axis rTriggerAxis)
-{
-    assert(s_currWindowCtx);
-    s_currWindowCtx->rTriggerInfo.axis = rTriggerAxis;
-}
-
-/////////////// Image Overloads for sf::Texture
-
-void Image(const sf::Texture &texture, const sf::Color &tintColor, const sf::Color &borderColor)
-{
-    Image(texture, sf::Vector2f(texture.getSize()), tintColor, borderColor);
-}
-
-void Image(const sf::Texture &texture, const sf::Vector2f &size, const sf::Color &tintColor,
-           const sf::Color &borderColor)
-{
-    ImTextureID textureID = convertGLTextureHandleToImTextureID(texture.getNativeHandle());
-
-    ImGui::Image(textureID, ImVec2(size.x, size.y), ImVec2(0, 0), ImVec2(1, 1),
-                 toImColor(tintColor), toImColor(borderColor));
-}
-
-/////////////// Image Overloads for sf::RenderTexture
-void Image(const sf::RenderTexture &texture, const sf::Color &tintColor,
-           const sf::Color &borderColor)
-{
-    Image(texture, sf::Vector2f(texture.getSize()), tintColor, borderColor);
-}
-
-void Image(const sf::RenderTexture &texture, const sf::Vector2f &size, const sf::Color &tintColor,
-           const sf::Color &borderColor)
-{
-    ImTextureID textureID =
-        convertGLTextureHandleToImTextureID(texture.getTexture().getNativeHandle());
-
-    ImGui::Image(textureID, ImVec2(size.x, size.y), ImVec2(0, 1),
-                 ImVec2(1, 0), // flipped vertically, because textures in sf::RenderTexture are
-                               // stored this way
-                 toImColor(tintColor), toImColor(borderColor));
-}
-
-/////////////// Image Overloads for sf::Sprite
-
-void Image(const sf::Sprite &sprite, const sf::Color &tintColor, const sf::Color &borderColor)
-{
-    const sf::FloatRect bounds = sprite.getGlobalBounds();
-    Image(sprite, sf::Vector2f(bounds.width, bounds.height), tintColor, borderColor);
-}
-
-void Image(const sf::Sprite &sprite, const sf::Vector2f &size, const sf::Color &tintColor,
-           const sf::Color &borderColor)
-{
-    const sf::Texture *texturePtr = sprite.getTexture();
-    // sprite without texture cannot be drawn
-    if (!texturePtr)
-    {
-        return;
-    }
-    const sf::Texture &texture = *texturePtr;
-    const sf::Vector2f textureSize(texture.getSize());
-    const sf::FloatRect textureRect(sprite.getTextureRect());
-    const ImVec2 uv0(textureRect.left / textureSize.x, textureRect.top / textureSize.y);
-    const ImVec2 uv1((textureRect.left + textureRect.width) / textureSize.x,
-                     (textureRect.top + textureRect.height) / textureSize.y);
-
-    ImTextureID textureID = convertGLTextureHandleToImTextureID(texture.getNativeHandle());
-
-    ImGui::Image(textureID, ImVec2(size.x, size.y), uv0, uv1, toImColor(tintColor),
-                 toImColor(borderColor));
-}
-
-/////////////// Image Button Overloads for sf::Texture
-
-bool ImageButton(const char *id, const sf::Texture &texture, const sf::Vector2f &size,
-                 const sf::Color &bgColor, const sf::Color &tintColor)
-{
-    ImTextureID textureID = convertGLTextureHandleToImTextureID(texture.getNativeHandle());
-
-    return ImGui::ImageButton(id, textureID, ImVec2(size.x, size.y), ImVec2(0, 0), ImVec2(1, 1),
-                              toImColor(bgColor), toImColor(tintColor));
-}
-
-/////////////// Image Button Overloads for sf::RenderTexture
-
-bool ImageButton(const char *id, const sf::RenderTexture &texture, const sf::Vector2f &size,
-                 const sf::Color &bgColor, const sf::Color &tintColor)
-{
-    ImTextureID textureID =
-        convertGLTextureHandleToImTextureID(texture.getTexture().getNativeHandle());
-
-    return ImGui::ImageButton(id, textureID, ImVec2(size.x, size.y), ImVec2(0, 1),
-                              ImVec2(1, 0), // flipped vertically, because textures in
-                                            // sf::RenderTexture are stored this way
-                              toImColor(bgColor), toImColor(tintColor));
-}
-
-/////////////// Image Button Overloads for sf::Sprite
-
-bool ImageButton(const char *id, const sf::Sprite &sprite, const sf::Vector2f &size,
-                 const sf::Color &bgColor, const sf::Color &tintColor)
-{
-    const sf::Texture *texturePtr = sprite.getTexture();
-    // sprite without texture cannot be drawn
-    if (!texturePtr)
-    {
-        return false;
-    }
-    const sf::Texture &texture = *texturePtr;
-    const sf::Vector2f textureSize(texture.getSize());
-    const sf::FloatRect textureRect(sprite.getTextureRect());
-    const ImVec2 uv0(textureRect.left / textureSize.x, textureRect.top / textureSize.y);
-    const ImVec2 uv1((textureRect.left + textureRect.width) / textureSize.x,
-                     (textureRect.top + textureRect.height) / textureSize.y);
-
-    ImTextureID textureID = convertGLTextureHandleToImTextureID(texture.getNativeHandle());
-    return ImGui::ImageButton(id, textureID, ImVec2(size.x, size.y), uv0, uv1, toImColor(bgColor),
-                              toImColor(tintColor));
-}
-
-/////////////// Draw_list Overloads
-
-void DrawLine(const sf::Vector2f &a, const sf::Vector2f &b, const sf::Color &color,
-              float thickness)
-{
-    ImDrawList *draw_list = ImGui::GetWindowDrawList();
-    const ImVec2 pos = ImGui::GetCursorScreenPos();
-    draw_list->AddLine(ImVec2(a.x + pos.x, a.y + pos.y), ImVec2(b.x + pos.x, b.y + pos.y),
-                       ColorConvertFloat4ToU32(toImColor(color)), thickness);
-}
-
-void DrawRect(const sf::FloatRect &rect, const sf::Color &color, float rounding,
-              int rounding_corners, float thickness)
-{
-    ImDrawList *draw_list = ImGui::GetWindowDrawList();
-    draw_list->AddRect(getTopLeftAbsolute(rect), getDownRightAbsolute(rect),
-                       ColorConvertFloat4ToU32(toImColor(color)), rounding, rounding_corners,
-                       thickness);
-}
-
-void DrawRectFilled(const sf::FloatRect &rect, const sf::Color &color, float rounding,
-                    int rounding_corners)
-{
-    ImDrawList *draw_list = ImGui::GetWindowDrawList();
-    draw_list->AddRectFilled(getTopLeftAbsolute(rect), getDownRightAbsolute(rect),
-                             ColorConvertFloat4ToU32(toImColor(color)), rounding, rounding_corners);
 }
 
 namespace
@@ -1467,4 +1209,57 @@ void ImGui_ImplSFML_ProcessEvent(sf::RenderWindow *window, sf::Event *event)
 bool ImGui_ImplSFML_UpdateFontTexture()
 {
     return UpdateFontTexture();
+}
+
+// bool cimgui_ImGui_ImplSFML_Init(void *window, bool load_default_font);
+// void cimgui_ImGui_ImplSFML_Shutdown(void *window);
+// void cimgui_ImGui_ImplSFML_ProcessEvent(void *window, void *event);
+// void cimgui_ImGui_ImplSFML_Update(void *window, uint64_t dtUs);
+// void cimgui_ImGui_ImplSFML_Render(void *window);
+// bool cimgui_UpdateFontTexture();
+
+extern "C"
+{
+    bool cimgui_ImGui_ImplSFML_Init(void *window, bool load_default_font)
+    {
+        assert(window && "Window pointer is null - forgot to call ImGui::SFML::Init?");
+        sf::RenderWindow *sfWindow = static_cast<sf::RenderWindow *>(window);
+        return ImGui_ImplSFML_Init(sfWindow, load_default_font);
+    }
+
+    void cimgui_ImGui_ImplSFML_Shutdown(void *window)
+    {
+        assert(window && "Window pointer is null - forgot to call ImGui::SFML::Init?");
+        sf::RenderWindow *sfWindow = static_cast<sf::RenderWindow *>(window);
+        ImGui_ImplSFML_Shutdown(sfWindow);
+    }
+
+    void cimgui_ImGui_ImplSFML_ProcessEvent(void *window, void *event)
+    {
+        assert(window && "Window pointer is null - forgot to call ImGui::SFML::Init?");
+        assert(event && "Event pointer is null - forgot to call ImGui::SFML::ProcessEvent?");
+        sf::RenderWindow *sfWindow = static_cast<sf::RenderWindow *>(window);
+        sf::Event *sfEvent = static_cast<sf::Event *>(event);
+        ImGui_ImplSFML_ProcessEvent(sfWindow, sfEvent);
+    }
+
+    void cimgui_ImGui_ImplSFML_Update(void *window, uint64_t dtUs)
+    {
+        assert(window && "Window pointer is null - forgot to call ImGui::SFML::Init?");
+        sf::RenderWindow *sfWindow = static_cast<sf::RenderWindow *>(window);
+        sf::Time dt = sf::microseconds(dtUs);
+        ImGui_ImplSFML_Update(sfWindow, dt);
+    }
+
+    void cimgui_ImGui_ImplSFML_Render(void *window)
+    {
+        assert(window && "Window pointer is null - forgot to call ImGui::SFML::Init?");
+        sf::RenderWindow *sfWindow = static_cast<sf::RenderWindow *>(window);
+        ImGui_ImplSFML_Render(sfWindow);
+    }
+
+    bool cimgui_UpdateFontTexture()
+    {
+        return ImGui_ImplSFML_UpdateFontTexture();
+    }
 }

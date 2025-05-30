@@ -1,9 +1,8 @@
 package sfml_backend
 
-// #cgo amd64,linux LDFLAGS: -L${SRCDIR}/../../lib/linux/x64 -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-system -lsfml-window -lcsfml-graphics -lcsfml-window -lcsfml-system -lcsfml-audio -lcsfml-network
+// #cgo amd64,linux LDFLAGS: -L${SRCDIR}/../../lib/linux/x64 -l:cimgui.a -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-system -lsfml-window -lcsfml-graphics -lcsfml-window -lcsfml-system -lcsfml-audio -lcsfml-network -lX11 -ldl -lGL -lXrandr -lstdc++ -ludev
 // #cgo CPPFLAGS: -DCIMGUI_GO_USE_SFML
-// #cgo CXXFLAGS: -std=c++17 -I${SRCDIR}/../../thirdparty/SFML/include -I${SRCDIR}/../../cwrappers/imgui
-// #cgo linux LDFLAGS: -lstdc++
+// #cgo CXXFLAGS: -I${SRCDIR}/../../thirdparty/SFML/include -I${SRCDIR}/../../cwrappers/imgui
 // #include <stdlib.h>
 // #include <stdint.h>
 // #include "sfml_backend.h"
@@ -11,6 +10,7 @@ import "C"
 
 import (
 	"errors"
+	"log"
 	"time"
 	"unsafe"
 )
@@ -45,4 +45,11 @@ func (b *SfmlBackend) Render(sfWindow unsafe.Pointer) {
 
 func (b *SfmlBackend) ProcessEvent(sfWindow unsafe.Pointer, event unsafe.Pointer) {
 	C.igProcessEvent(sfWindow, event)
+}
+
+func main() {
+	// This is just a placeholder to ensure the package can be built.
+	// The actual usage will be in the GUI package or wherever needed.
+
+	log.Println("hello from SFML backend package")
 }
