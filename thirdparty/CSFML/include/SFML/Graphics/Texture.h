@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2018 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2024 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -36,6 +36,15 @@
 #include <SFML/System/Vector2.h>
 #include <stddef.h>
 
+////////////////////////////////////////////////////////////
+/// \brief Types of texture coordinates that can be used for rendering.
+///
+////////////////////////////////////////////////////////////
+typedef enum
+{
+    sfTextureNormalized, ///< sfTexture coordinates in range [0 .. 1].
+    sfTexturePixels      ///< sfTexture coordinates in range [0 .. size].
+} sfTextureCoordinateType;
 
 ////////////////////////////////////////////////////////////
 /// \brief Create a new texture
@@ -60,6 +69,29 @@ CSFML_GRAPHICS_API sfTexture* sfTexture_create(unsigned int width, unsigned int 
 CSFML_GRAPHICS_API sfTexture* sfTexture_createFromFile(const char* filename, const sfIntRect* area);
 
 ////////////////////////////////////////////////////////////
+/// \brief Create a new sRGB-enabled texture from a file
+///
+/// When providing texture data from an image file or memory, it can
+/// either be stored in a linear color space or an sRGB color space.
+/// Most digital images account for gamma correction already, so they
+/// would need to be "uncorrected" back to linear color space before
+/// being processed by the hardware. The hardware can automatically
+/// convert it from the sRGB color space to a linear color space when
+/// it gets sampled. When the rendered image gets output to the final
+/// framebuffer, it gets converted back to sRGB.
+///
+/// This load option is only useful in conjunction with an sRGB capable
+/// framebuffer. This can be requested during window creation.
+///
+/// \param filename Path of the image file to load
+/// \param area     Area of the source image to load (NULL to load the entire image)
+///
+/// \return A new sfTexture object, or NULL if it failed
+///
+////////////////////////////////////////////////////////////
+CSFML_GRAPHICS_API sfTexture* sfTexture_createSrgbFromFile(const char* filename, const sfIntRect* area);
+
+////////////////////////////////////////////////////////////
 /// \brief Create a new texture from a file in memory
 ///
 /// \param data        Pointer to the file data in memory
@@ -70,6 +102,18 @@ CSFML_GRAPHICS_API sfTexture* sfTexture_createFromFile(const char* filename, con
 ///
 ////////////////////////////////////////////////////////////
 CSFML_GRAPHICS_API sfTexture* sfTexture_createFromMemory(const void* data, size_t sizeInBytes, const sfIntRect* area);
+
+////////////////////////////////////////////////////////////
+/// \brief Create a new sRGB-enabled texture from a file in memory
+///
+/// \param data        Pointer to the file data in memory
+/// \param sizeInBytes Size of the data to load, in bytes
+/// \param area        Area of the source image to load (NULL to load the entire image)
+///
+/// \return A new sfTexture object, or NULL if it failed
+///
+////////////////////////////////////////////////////////////
+CSFML_GRAPHICS_API sfTexture* sfTexture_createSrgbFromMemory(const void* data, size_t sizeInBytes, const sfIntRect* area);
 
 ////////////////////////////////////////////////////////////
 /// \brief Create a new texture from a custom stream
@@ -83,6 +127,17 @@ CSFML_GRAPHICS_API sfTexture* sfTexture_createFromMemory(const void* data, size_
 CSFML_GRAPHICS_API sfTexture* sfTexture_createFromStream(sfInputStream* stream, const sfIntRect* area);
 
 ////////////////////////////////////////////////////////////
+/// \brief Create a new sRGB-enabled texture from a custom stream
+///
+/// \param stream Source stream to read from
+/// \param area   Area of the source image to load (NULL to load the entire image)
+///
+/// \return A new sfTexture object, or NULL if it failed
+///
+////////////////////////////////////////////////////////////
+CSFML_GRAPHICS_API sfTexture* sfTexture_createSrgbFromStream(sfInputStream* stream, const sfIntRect* area);
+
+////////////////////////////////////////////////////////////
 /// \brief Create a new texture from an image
 ///
 /// \param image Image to upload to the texture
@@ -92,6 +147,17 @@ CSFML_GRAPHICS_API sfTexture* sfTexture_createFromStream(sfInputStream* stream, 
 ///
 ////////////////////////////////////////////////////////////
 CSFML_GRAPHICS_API sfTexture* sfTexture_createFromImage(const sfImage* image, const sfIntRect* area);
+
+////////////////////////////////////////////////////////////
+/// \brief Create a new sRGB-enabled texture from an image
+///
+/// \param image Image to upload to the texture
+/// \param area  Area of the source image to load (NULL to load the entire image)
+///
+/// \return A new sfTexture object, or NULL if it failed
+///
+////////////////////////////////////////////////////////////
+CSFML_GRAPHICS_API sfTexture* sfTexture_createSrgbFromImage(const sfImage* image, const sfIntRect* area);
 
 ////////////////////////////////////////////////////////////
 /// \brief Copy an existing texture
@@ -215,36 +281,14 @@ CSFML_GRAPHICS_API void sfTexture_setSmooth(sfTexture* texture, sfBool smooth);
 CSFML_GRAPHICS_API sfBool sfTexture_isSmooth(const sfTexture* texture);
 
 ////////////////////////////////////////////////////////////
-/// \brief Enable or disable conversion from sRGB
-///
-/// When providing texture data from an image file or memory, it can
-/// either be stored in a linear color space or an sRGB color space.
-/// Most digital images account for gamma correction already, so they
-/// would need to be "uncorrected" back to linear color space before
-/// being processed by the hardware. The hardware can automatically
-/// convert it from the sRGB color space to a linear color space when
-/// it gets sampled. When the rendered image gets output to the final
-/// framebuffer, it gets converted back to sRGB.
-///
-/// After enabling or disabling sRGB conversion, make sure to reload
-/// the texture data in order for the setting to take effect.
-///
-/// This option is only useful in conjunction with an sRGB capable
-/// framebuffer. This can be requested during window creation.
-///
-/// \param sRgb True to enable sRGB conversion, false to disable it
-///
-/// \see sfTexture_isSrgb
-///
-////////////////////////////////////////////////////////////
-CSFML_GRAPHICS_API void sfTexture_setSrgb(sfTexture* texture, sfBool sRgb);
-
-////////////////////////////////////////////////////////////
 /// \brief Tell whether the texture source is converted from sRGB or not
 ///
 /// \return True if the texture source is converted from sRGB, false if not
 ///
-/// \see sfTexture_setSrgb
+/// \see sfTexture_createSrgbFromFile
+/// \see sfTexture_createSrgbFromMemory
+/// \see sfTexture_createSrgbFromStream
+/// \see sfTexture_createSrgbFromImage
 ///
 ////////////////////////////////////////////////////////////
 CSFML_GRAPHICS_API sfBool sfTexture_isSrgb(const sfTexture* texture);
@@ -351,7 +395,7 @@ CSFML_GRAPHICS_API unsigned int sfTexture_getNativeHandle(const sfTexture* textu
 /// \param texture Pointer to the texture to bind, can be null to use no texture
 ///
 ////////////////////////////////////////////////////////////
-CSFML_GRAPHICS_API void sfTexture_bind(const sfTexture* texture);
+CSFML_GRAPHICS_API void sfTexture_bind(const sfTexture* texture, sfTextureCoordinateType type);
 
 ////////////////////////////////////////////////////////////
 /// \brief Get the maximum texture size allowed
@@ -359,7 +403,7 @@ CSFML_GRAPHICS_API void sfTexture_bind(const sfTexture* texture);
 /// \return Maximum size allowed for textures, in pixels
 ///
 ////////////////////////////////////////////////////////////
-CSFML_GRAPHICS_API unsigned int sfTexture_getMaximumSize();
+CSFML_GRAPHICS_API unsigned int sfTexture_getMaximumSize(void);
 
 
 #endif // SFML_TEXTURE_H
