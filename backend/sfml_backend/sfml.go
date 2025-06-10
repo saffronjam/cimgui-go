@@ -48,6 +48,13 @@ func (b *SfmlBackend) ProcessEvent(sfWindow unsafe.Pointer, event unsafe.Pointer
 	C.igSfmlProcessEvent(sfWindow, event)
 }
 
+func (b *SfmlBackend) UpdateFontTexture() error {
+	if !C.igSfmlUpdateFontTexture() {
+		return errors.New("failed to update font texture")
+	}
+	return nil
+}
+
 func main() {
 	// This is just a placeholder to ensure the package can be built.
 	// The actual usage will be in the GUI package or wherever needed.
